@@ -28,6 +28,30 @@ def text_node_to_html_node(text_node):
             leaf_node = LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
             return leaf_node
 
+def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type != TextType.NORMAL:
+            new_nodes.append(node)
+            continue
+        if delimiter not in node.text:
+            new_nodes.append(node)
+            continue
+        working_list = node.text.split(delimiter)
+        if len(working_list) == 1:
+            new_nodes.append(node)
+            continue
+        if len(working_list) % 2 == 0:
+            raise ValueError(f"Closing delimiter not found for {delimiter}; i.e. there is markdown with a start but no end")
+        for index, item in enumerate(working_list):
+            if index % 2 == 0:
+                if item:
+                    new_nodes.append(TextNode(item, TextType.NORMAL))
+            else:
+                new_nodes.append(TextNode(item, text_type))
+                
+    return new_nodes
+        
 
 def main():
     testing = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
