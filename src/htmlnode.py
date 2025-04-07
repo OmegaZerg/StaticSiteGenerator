@@ -40,8 +40,8 @@ class HTMLNode():
     
 class LeafNode(HTMLNode):
     def __init__(self, tag, value, props=None):
-        if value is None or len(value) < 1:
-            raise ValueError("Value cannot be None or empty")
+        if value is None:
+            raise ValueError("Value cannot be None")
         super().__init__(tag, value, props, children=None)
 
     def __repr__(self):

@@ -81,13 +81,13 @@ class TestLeafNode(unittest.TestCase):
         try:
             LeafNode("p", None, {"href": "https://www.google.com"})
         except ValueError as e:
-            assert str(e) == "Value cannot be None or empty"
+            assert str(e) == "Value cannot be None"
 
-    def test_leaf_to_html_value_blank(self): 
-        try:
-            LeafNode("p", "", {"href": "https://www.google.com"})
-        except ValueError as e:
-            assert str(e) == "Value cannot be None or empty"
+    #def test_leaf_to_html_value_blank(self): 
+    #    try:
+    #        LeafNode("p", "", {"href": "https://www.google.com"})
+    #    except ValueError as e:
+    #        assert str(e) == "Value cannot be None or empty"
 
 class TestParentNode(unittest.TestCase):
     def test_to_html_with_no_tag(self):
