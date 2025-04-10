@@ -119,6 +119,15 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     return re.findall(r"(?<!!)\[([^\[\]]*)\]\((https?:\/\/[^\(\)\s]+)\)", text)
         
+def text_to_textnodes(text):
+    initial_nodes = [TextNode(text, TextType.NORMAL)]
+    new_nodes = split_nodes_delimiter(initial_nodes, "**", TextType.BOLD)
+    new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
+    new_nodes = split_nodes_delimiter(new_nodes, "`", TextType.CODE)
+    new_nodes = split_nodes_image(new_nodes)
+    new_nodes = split_nodes_link(new_nodes)
+    return new_nodes
+
 
 def main():
     testing = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
