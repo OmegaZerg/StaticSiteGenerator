@@ -1,5 +1,6 @@
 import re
 from enum import Enum
+from htmlnode import HTMLNode
 
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
@@ -38,3 +39,42 @@ def block_to_block_type(block):
         return BlockType.ORDERED_LIST
     else:
         return BlockType.PARAGRAPH
+    
+def determine_heading(heading_block):
+    match (heading_block):
+        case (heading_block.startswith("# ")):
+            return "h1"
+        case (heading_block.startswith("## ")):
+            return "h2"
+        case (heading_block.startswith("### ")):
+            return "h3"
+        case (heading_block.startswith("#### ")):
+            return "h4"
+        case (heading_block.startswith("##### ")):
+            return "h5"
+        case (heading_block.startswith("###### ")):
+            return "h6"
+        case _:
+            raise Exception("invalid heading type")
+        
+def text_to_children(text):
+    pass
+    
+def markdown_to_html_node(markdown):
+    clean_blocks = markdown_to_blocks(markdown)
+    html_nodes = []
+    for block in clean_blocks:
+        block_type = block_to_block_type(block)
+        if block_type == BlockType.PARAGRAPH:
+            #block needs to be replaced with text to children function???
+            html_nodes.append(HTMLNode("p", block))
+        elif block_type == BlockType.HEADING:
+            html_nodes.append(HTMLNode(determine_heading(block), block))
+        elif block_type == BlockType.CODE:
+            html_nodes.append(HTMLNode("code", block))
+        elif block_type == BlockType.QUOTE:
+            html_nodes.append(HTMLNode("blockquote", block))
+        elif block_type == BlockType.UNORDERED_LIST:
+            html_nodes.append(HTMLNode("ul", block))
+        elif block_type == BlockType.ORDERED_LIST:
+            html_nodes.append(HTMLNode("ol", block))
