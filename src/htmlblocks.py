@@ -1,6 +1,7 @@
 import re
 from enum import Enum
 from htmlnode import HTMLNode
+from textnode import TextNode, TextType
 
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
@@ -58,23 +59,67 @@ def determine_heading(heading_block):
             raise Exception("invalid heading type")
         
 def text_to_children(text):
-    pass
+    children = []
+    # Match any inline markdown token: **bold**, _italic_, `code`
+    pattern = r"(\*\*(.+?)\*\*|`(.+?)`|_(.+?)_)"
+    matches = re.finditer(pattern, text)
+
+    last_index = 0  # Track end of last match
+    for match in matches:
+        # Add plain text before this match (if any)
+        start, end = match.span()
+        plain_text = text[last_index:start]
+        if plain_text:
+            children.append(TextNode(plain_text, TextType.NORMAL))
+        # Process the current match
+        if match.group(2):  # Bold (**bold**)
+            children.append(HTMLNode("b", match.group(2)))
+        elif match.group(3):  # Code (`code`)
+            children.append(HTMLNode("code", match.group(3)))
+        elif match.group(4):  # Italic (_italic_)
+            children.append(HTMLNode("i", match.group(4)))
+        
+        # Update the last index to track the end of the current match
+        last_index = end
+
+        # Add remaining plain text after the last match as a TextNode
+        if last_index < len(text):
+            remaining_text = text[last_index:]
+            children.append(TextNode(remaining_text, TextType.NORMAL))
+        
+        return children
+    
     
 def markdown_to_html_node(markdown):
     clean_blocks = markdown_to_blocks(markdown)
     html_nodes = []
     for block in clean_blocks:
-        block_type = block_to_block_type(block)
+        block_type = block_to_block_type(block)  # Determine type of block
         if block_type == BlockType.PARAGRAPH:
-            #block needs to be replaced with text to children function???
-            html_nodes.append(HTMLNode("p", block))
+            children = text_to_children(block)
+            html_nodes.append(HTMLNode("p", children))
         elif block_type == BlockType.HEADING:
-            html_nodes.append(HTMLNode(determine_heading(block), block))
+            children = text_to_children(block)
+            html_nodes.append(HTMLNode(determine_heading(block), children))
+        # Code Blocks (special handling)    
         elif block_type == BlockType.CODE:
-            html_nodes.append(HTMLNode("code", block))
+            text_node = TextNode(block, TextType.NORMAL)  # No inline parsing - plain text
+            code_node = HTMLNode("code", [text_node])
+            html_nodes.append(HTMLNode("pre", [code_node]))  # Wrap code in <pre>
+        # Quote Blocks
         elif block_type == BlockType.QUOTE:
-            html_nodes.append(HTMLNode("blockquote", block))
+            children = text_to_children(block)
+            html_nodes.append(HTMLNode("blockquote", children))
+        # Unordered Lists
         elif block_type == BlockType.UNORDERED_LIST:
-            html_nodes.append(HTMLNode("ul", block))
+            list_items = block.split("\n")  # Split into individual list items
+            li_nodes = [HTMLNode("li", [TextNode(item.strip(), TextType.NORMAL)]) for item in list_items]
+            html_nodes.append(HTMLNode("ul", li_nodes))
+        # Ordered Lists
         elif block_type == BlockType.ORDERED_LIST:
-            html_nodes.append(HTMLNode("ol", block))
+            list_items = block.split("\n")  # Split into individual list items
+            li_nodes = [HTMLNode("li", [TextNode(item.strip(), TextType.NORMAL)]) for item in list_items]
+            html_nodes.append(HTMLNode("ol", li_nodes))
+
+    #everything goes inside parent <div>
+    return HTMLNode("div", html_nodes)
