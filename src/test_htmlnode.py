@@ -24,8 +24,8 @@ class TestHTMLNode(unittest.TestCase):
     def test_repr(self):
         node = HTMLNode("h1", "This is a test heading.",{"href": "https://www.google.com", "target": "_blank"},None)
         node2 = HTMLNode("p", "This is a test paragraph.")
-        self.assertEqual(repr(node), "HTMLNode(h1, This is a test heading., None, {'href': 'https://www.google.com', 'target': '_blank'})")
-        self.assertEqual(repr(node2), "HTMLNode(p, This is a test paragraph., None, None)")
+        self.assertEqual(repr(node), "HTMLNode(h1, This is a test heading., [], {'href': 'https://www.google.com', 'target': '_blank'})")
+        self.assertEqual(repr(node2), "HTMLNode(p, This is a test paragraph., [], None)")
 
 class TestLeafNode(unittest.TestCase):
     def test_leaf_eq(self):

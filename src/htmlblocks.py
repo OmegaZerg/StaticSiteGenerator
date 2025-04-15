@@ -79,23 +79,26 @@ def text_to_children(text):
             children.append(TextNode(plain_text, TextType.NORMAL))
         # Process the current match
         if match.group(2):  # Bold (**bold**)
-            children.append(HTMLNode("b", match.group(2)))
+            #children.append(HTMLNode("b", match.group(2)))
+            children.append(HTMLNode("b", [TextNode(match.group(2), TextType.NORMAL)]))
         elif match.group(3):  # Code (`code`)
-            children.append(HTMLNode("code", match.group(3)))
+            #children.append(HTMLNode("code", match.group(3)))
+            children.append(HTMLNode("code", [TextNode(match.group(3), TextType.NORMAL)]))
         elif match.group(4):  # Italic (_italic_)
-            children.append(HTMLNode("i", match.group(4)))
+            #children.append(HTMLNode("i", match.group(4)))
+            children.append(HTMLNode("i", [TextNode(match.group(4), TextType.NORMAL)]))
         
         # Update the last index to track the end of the current match
         last_index = end
 
-        # Add remaining plain text after the last match as a TextNode
-        if last_index < len(text):
-            remaining_text = text[last_index:]
-            children.append(TextNode(remaining_text, TextType.NORMAL))
-        
-        return children
+    # Add remaining plain text after the last match as a TextNode
+    if last_index < len(text):
+        remaining_text = text[last_index:]
+        children.append(TextNode(remaining_text, TextType.NORMAL))
     
-#Function that converts a full markdown document into a single parent HTMLNode. This parent HTMLNode should contain multiple child HTMLNode objects which represent ensted elements.    
+    return children
+    
+#Function that converts a full markdown document into a single parent HTMLNode. This parent HTMLNode should contain multiple child HTMLNode objects which represent nested elements.    
 def markdown_to_html_node(markdown):
     clean_blocks = markdown_to_blocks(markdown)
     html_nodes = []
@@ -128,4 +131,4 @@ def markdown_to_html_node(markdown):
             html_nodes.append(HTMLNode("ol", li_nodes))
 
     #everything goes inside parent <div>
-    return HTMLNode("div", html_nodes)
+    return HTMLNode("div", None, None, html_nodes)

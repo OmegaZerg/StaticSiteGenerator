@@ -21,7 +21,7 @@ class HTMLNode():
     def __init__(self, tag=None, value=None, props=None, children=None):
         self.tag = tag  #String representation of the HTML tag itself: "p", "a", "h1", "b", "code", "i", "img"
         self.value = value  #String representation of the value/information to be contained within the tag.
-        self.children = children  #A list of HTMLNode objects representing the children of this node (if any).
+        self.children = children if children else [] #A list of HTMLNode objects representing the children of this node (if any). Set to empty list if none provided.
         self.props = props  #Dictionary Key/Value pairs representing the attributes for the HTML tag. Example: a link <a> tag might have {"href": "https://.google.com"}
 
     def __eq__(self, other):
@@ -32,11 +32,19 @@ class HTMLNode():
     def __repr__(self):
         return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"
 
-    #Children must implement this method
     def to_html(self):
-        raise NotImplementedError
+        #Open tag of HTMLNode
+        html = f"<{self.tag}>"
+
+        #Add child nodes (if any)
+        for child in self.children:
+            html += child.to_html() # Recursively call to_html() on children
+
+        #Close tha tag
+        html += f"</{self.tag}>"
+        return html
     
-    #This method will return a string that represents the HTML attributes of the node. Only applicable for nodes that have attributes/props.
+    #props_to_html will return a string that represents the HTML attributes of the node. Only applicable for nodes that have attributes/props.
     """
     And example input:
     {
