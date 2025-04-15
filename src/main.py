@@ -56,6 +56,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 
     return new_nodes
 
+#Helper function that splits raw markdown strings into TextNodes based on images.
 def split_nodes_image(old_nodes):
     new_nodes = []
     for node in old_nodes:
@@ -86,6 +87,7 @@ def split_nodes_image(old_nodes):
                 
     return new_nodes
 
+#Helper function that splits raw markdown strings into TextNodes based on links.
 def split_nodes_link(old_nodes):
     new_nodes = []
     for node in old_nodes:
@@ -116,12 +118,15 @@ def split_nodes_link(old_nodes):
                 
     return new_nodes
 
+#Helper function that takes raw markdown text and returns a list of tuples. Each tuple contains the alt text and the URL of any markdown images.
 def extract_markdown_images(text):
     return re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
 
+#Helper function that takes raw markdown text and returns a list of tuples. Each tuple contains the alt text and the URL of any markdown links.
 def extract_markdown_links(text):
     return re.findall(r"(?<!!)\[([^\[\]]*)\]\((https?:\/\/[^\(\)\s]+)\)", text)
         
+#Function that converts raw strings of markdown text into a list of TextNode objects.
 def text_to_textnodes(text):
     initial_nodes = [TextNode(text, TextType.NORMAL)]
     new_nodes = split_nodes_delimiter(initial_nodes, "**", TextType.BOLD)
