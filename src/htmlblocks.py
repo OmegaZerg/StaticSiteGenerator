@@ -3,6 +3,7 @@ from enum import Enum
 from htmlnode import HTMLNode
 from textnode import TextNode, TextType
 
+#We only allow specific HTML "blocks" to be created, using what is setup within the BlockType Enum.
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
     HEADING = "heading"
@@ -11,6 +12,7 @@ class BlockType(Enum):
     UNORDERED_LIST = "unordered_list"
     ORDERED_LIST = "ordered_list"
 
+#Function that takes a raw markdown string (full document), as input and returns a list of "block" strings. 
 def markdown_to_blocks(markdown_document):
     blocks = markdown_document.split("\n\n")
     clean_blocks = []
@@ -19,6 +21,7 @@ def markdown_to_blocks(markdown_document):
             clean_blocks.append(re.sub(r'\n\s+', '\n', block.strip()))
     return clean_blocks
 
+#Helper function to determine if a line of markdown is an ordered list.
 def is_ordered_list(lines):
     for i, line in enumerate(lines):
         expected_prefix = f"{i+1}. "
@@ -26,6 +29,7 @@ def is_ordered_list(lines):
             return False
     return True
 
+#Function that takes a single block of markdown text as input and returns the BlockType representing the type of block it is.
 def block_to_block_type(block):
     lines = block.split("\n")
     if block.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### " )):
@@ -41,6 +45,7 @@ def block_to_block_type(block):
     else:
         return BlockType.PARAGRAPH
     
+#Helper function to determine the type of heading and return the appropriate HTML heading tag.
 def determine_heading(heading_block):
     match (heading_block):
         case (heading_block.startswith("# ")):
@@ -57,7 +62,8 @@ def determine_heading(heading_block):
             return "h6"
         case _:
             raise Exception("invalid heading type")
-        
+
+#Helper function that takes a string of text and returns a list of HTMLNodes that represent the inline markdown.        
 def text_to_children(text):
     children = []
     # Match any inline markdown token: **bold**, _italic_, `code`
@@ -89,7 +95,7 @@ def text_to_children(text):
         
         return children
     
-    
+#Function that converts a full markdown document into a single parent HTMLNode. This parent HTMLNode should contain multiple child HTMLNode objects which represent ensted elements.    
 def markdown_to_html_node(markdown):
     clean_blocks = markdown_to_blocks(markdown)
     html_nodes = []

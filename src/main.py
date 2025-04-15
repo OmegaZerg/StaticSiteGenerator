@@ -2,6 +2,7 @@ from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode, ParentNode
 import re
 
+#Helper function to convert a TextNode to a LeafNode
 def text_node_to_html_node(text_node):
     if not isinstance(text_node.text_type, TextType):
         raise ValueError("Text node does not contain a valid text type")
@@ -29,6 +30,8 @@ def text_node_to_html_node(text_node):
             leaf_node = LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
             return leaf_node
 
+#Helper function that creates TextNodes from raw markdown strings.
+#At this time, nested inline elements are not handled. i.e. "This is an _italic and **bold** word_.""
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
     for node in old_nodes:
