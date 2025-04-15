@@ -1,0 +1,1 @@
+The static site generator will take raw content files as inputs with markdown and convert everything to markup/HTML and CSS for display on a website. 
