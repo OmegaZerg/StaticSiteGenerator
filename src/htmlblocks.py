@@ -101,34 +101,37 @@ def text_to_children(text):
 #Function that converts a full markdown document into a single parent HTMLNode. This parent HTMLNode should contain multiple child HTMLNode objects which represent nested elements.    
 def markdown_to_html_node(markdown):
     clean_blocks = markdown_to_blocks(markdown)
+    print(f"clean blocks: {clean_blocks}")
     html_nodes = []
     for block in clean_blocks:
         block_type = block_to_block_type(block)  # Determine type of block
+        print(f"block type: {block_type}")
         if block_type == BlockType.PARAGRAPH:
             children = text_to_children(block)
-            html_nodes.append(HTMLNode("p", children))
+            print(f"text to chidlren: {children}")
+            html_nodes.append(HTMLNode("p", None, None, children))
         elif block_type == BlockType.HEADING:
             children = text_to_children(block)
-            html_nodes.append(HTMLNode(determine_heading(block), children))
+            html_nodes.append(HTMLNode(determine_heading(block), None, None, children))
         # Code Blocks (special handling)    
         elif block_type == BlockType.CODE:
             text_node = TextNode(block, TextType.NORMAL)  # No inline parsing - plain text
-            code_node = HTMLNode("code", [text_node])
-            html_nodes.append(HTMLNode("pre", [code_node]))  # Wrap code in <pre>
+            code_node = HTMLNode("code", None, None, [text_node])
+            html_nodes.append(HTMLNode("pre", None, None, [code_node]))  # Wrap code in <pre>
         # Quote Blocks
         elif block_type == BlockType.QUOTE:
             children = text_to_children(block)
-            html_nodes.append(HTMLNode("blockquote", children))
+            html_nodes.append(HTMLNode("blockquote", None, None, children))
         # Unordered Lists
         elif block_type == BlockType.UNORDERED_LIST:
             list_items = block.split("\n")  # Split into individual list items
-            li_nodes = [HTMLNode("li", [TextNode(item.strip(), TextType.NORMAL)]) for item in list_items]
-            html_nodes.append(HTMLNode("ul", li_nodes))
+            li_nodes = [HTMLNode("li", None, None, [TextNode(item.strip(), TextType.NORMAL)]) for item in list_items]
+            html_nodes.append(HTMLNode("ul", None, None, li_nodes))
         # Ordered Lists
         elif block_type == BlockType.ORDERED_LIST:
             list_items = block.split("\n")  # Split into individual list items
-            li_nodes = [HTMLNode("li", [TextNode(item.strip(), TextType.NORMAL)]) for item in list_items]
-            html_nodes.append(HTMLNode("ol", li_nodes))
-
+            li_nodes = [HTMLNode("li", None, None, [TextNode(item.strip(), TextType.NORMAL)]) for item in list_items]
+            html_nodes.append(HTMLNode("ol", None, None, li_nodes))
+        print(f"html nodes: {html_nodes}")
     #everything goes inside parent <div>
     return HTMLNode("div", None, None, html_nodes)

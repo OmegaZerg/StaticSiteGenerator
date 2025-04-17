@@ -89,7 +89,7 @@ class LeafNode(HTMLNode):
     def __init__(self, tag, value, props=None):
         if value is None:
             raise ValueError("Value cannot be None")
-        super().__init__(tag, value, props, children=None)
+        super().__init__(tag, value, props, None)
 
     def __repr__(self):
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
@@ -117,6 +117,7 @@ class ParentNode(HTMLNode):
         for child in children:
             if not isinstance(child, HTMLNode):
                 raise ValueError("Children must be an HTMLNode object")
+        super().__init__(tag, None, props, children)
         self.tag = tag
         self.children = children
         self.props = props
