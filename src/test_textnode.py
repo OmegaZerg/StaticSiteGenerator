@@ -90,13 +90,6 @@ class TestTextNodeConversion(unittest.TestCase):
             node = TextNode("This is image description text", None, "imageURL.com")
             text_node_to_html_node(node)
         self.assertEqual(str(context.exception), "Text node does not contain a valid text type")
-    #Refactored the below test to the new one above this line
-    # def test_invalid_text_type(self): 
-    #     try:
-    #         node = TextNode("This is image description text", "INVALID", "imageURL.com")
-    #         html_node = text_node_to_html_node(node)
-    #     except ValueError as e:
-    #         assert str(e) == "Text node does not contain a valid text type"
 
 
 if __name__ == "__main__":

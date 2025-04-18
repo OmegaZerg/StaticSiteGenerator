@@ -111,9 +111,9 @@ class TestTextToChildren(unittest.TestCase):
         children = text_to_children(md)
         self.assertEqual(
             children,[
-            HTMLNode("b", [TextNode("bold", TextType.NORMAL)]),
-            HTMLNode("i", [TextNode("italic", TextType.NORMAL)]),
-            HTMLNode("code", [TextNode("code", TextType.NORMAL)])
+            HTMLNode("b", None, None, [TextNode("bold", TextType.NORMAL)]),
+            HTMLNode("i", None, None, [TextNode("italic", TextType.NORMAL)]),
+            HTMLNode("code", None, None, [TextNode("code", TextType.NORMAL)])
         ],
         )
 
@@ -124,11 +124,11 @@ class TestTextToChildren(unittest.TestCase):
         self.assertEqual(
             children,[
             TextNode("This is ", TextType.NORMAL),
-            HTMLNode("b", [TextNode("bold", TextType.NORMAL)]),
+            HTMLNode("b", None, None, [TextNode("bold", TextType.NORMAL)]),
             TextNode(" and ", TextType.NORMAL),
-            HTMLNode("i", [TextNode("italic", TextType.NORMAL)]),
+            HTMLNode("i", None, None, [TextNode("italic", TextType.NORMAL)]),
             TextNode(" with ", TextType.NORMAL),
-            HTMLNode("code", [TextNode("code", TextType.NORMAL)]),
+            HTMLNode("code", None, None, [TextNode("code", TextType.NORMAL)]),
             TextNode(".", TextType.NORMAL)
         ],
         )

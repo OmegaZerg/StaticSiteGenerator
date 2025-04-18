@@ -79,14 +79,13 @@ def text_to_children(text):
             children.append(TextNode(plain_text, TextType.NORMAL))
         # Process the current match
         if match.group(2):  # Bold (**bold**)
-            #children.append(HTMLNode("b", match.group(2)))
-            children.append(HTMLNode("b", [TextNode(match.group(2), TextType.NORMAL)]))
+            children.append(HTMLNode("b", None, None, [TextNode(match.group(2), TextType.NORMAL)]))
         elif match.group(3):  # Code (`code`)
             #children.append(HTMLNode("code", match.group(3)))
-            children.append(HTMLNode("code", [TextNode(match.group(3), TextType.NORMAL)]))
+            children.append(HTMLNode("code", None, None, [TextNode(match.group(3), TextType.NORMAL)]))
         elif match.group(4):  # Italic (_italic_)
             #children.append(HTMLNode("i", match.group(4)))
-            children.append(HTMLNode("i", [TextNode(match.group(4), TextType.NORMAL)]))
+            children.append(HTMLNode("i", None, None, [TextNode(match.group(4), TextType.NORMAL)]))
         
         # Update the last index to track the end of the current match
         last_index = end
