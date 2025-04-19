@@ -18,7 +18,7 @@ def markdown_to_blocks(markdown_document):
     clean_blocks = []
     for block in blocks:
         if block != "\n" and block != "":
-            clean_blocks.append(re.sub(r'\n\s+', '\n', block.strip()))
+            clean_blocks.append(re.sub(r'\n\s+', '', block.strip()))
     return clean_blocks
 
 #Helper function to determine if a line of markdown is an ordered list.
@@ -69,7 +69,6 @@ def text_to_children(text):
     # Match any inline markdown token: **bold**, _italic_, `code`
     pattern = r"(\*\*(.+?)\*\*|`(.+?)`|_(.+?)_)"
     matches = re.finditer(pattern, text)
-
     last_index = 0  # Track end of last match
     for match in matches:
         # Add plain text before this match (if any)
@@ -78,14 +77,12 @@ def text_to_children(text):
         if plain_text:
             children.append(TextNode(plain_text, TextType.NORMAL))
         # Process the current match
-        if match.group(2):  # Bold (**bold**)
-            children.append(HTMLNode("b", None, None, [TextNode(match.group(2), TextType.NORMAL)]))
-        elif match.group(3):  # Code (`code`)
-            #children.append(HTMLNode("code", match.group(3)))
-            children.append(HTMLNode("code", None, None, [TextNode(match.group(3), TextType.NORMAL)]))
-        elif match.group(4):  # Italic (_italic_)
-            #children.append(HTMLNode("i", match.group(4)))
-            children.append(HTMLNode("i", None, None, [TextNode(match.group(4), TextType.NORMAL)]))
+        if match.group(0):  # Bold (**bold**)
+            children.append(HTMLNode("b", None, None, [TextNode(match.group(0), TextType.NORMAL)]))
+        elif match.group(1):  # Code (`code`)
+            children.append(HTMLNode("code", None, None, [TextNode(match.group(1), TextType.NORMAL)]))
+        elif match.group(2):  # Italic (_italic_)
+            children.append(HTMLNode("i", None, None, [TextNode(match.group(2), TextType.NORMAL)]))
         
         # Update the last index to track the end of the current match
         last_index = end
