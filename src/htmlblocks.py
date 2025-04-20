@@ -12,13 +12,14 @@ class BlockType(Enum):
     UNORDERED_LIST = "unordered_list"
     ORDERED_LIST = "ordered_list"
 
-#Function that takes a raw markdown string (full document), as input and returns a list of "block" strings. 
+#Function that takes a raw markdown string (full document), as input and returns a list of "block" strings by removing extra new lines and/or newlines with whitespace after.
 def markdown_to_blocks(markdown_document):
     blocks = markdown_document.split("\n\n")
     clean_blocks = []
     for block in blocks:
         if block != "\n" and block != "":
-            clean_blocks.append(re.sub(r'\n\s+', '', block.strip()))
+            clean_blocks.append(re.sub(r'\n\s+', '\n', block.strip()))
+    print(f"Clean Blocks: {clean_blocks}")
     return clean_blocks
 
 #Helper function to determine if a line of markdown is an ordered list.
@@ -62,9 +63,18 @@ def determine_heading(heading_block):
             return "h6"
         case _:
             raise Exception("invalid heading type")
+        
+#Helper function that takes in a code_block and strips away the markdown
+def process_code_block(code_block):
+    return code_block.strip('`').lstrip('\n')
+
+#Helper function that takes in a paragraph_block and strips away the markdown. Paragraph blocks could contain either bolded or italicised words
+def process_paragraph_block(paragraph_block):
+    return paragraph_block.strip('**').strip('_')
+
 
 #Helper function that takes a string of text and returns a list of HTMLNodes that represent the inline markdown.        
-def text_to_children(text):
+def text_to_children_old(text):
     children = []
     # Match any inline markdown token: **bold**, _italic_, `code`
     pattern = r"(\*\*(.+?)\*\*|`(.+?)`|_(.+?)_)"
@@ -78,8 +88,12 @@ def text_to_children(text):
             children.append(TextNode(plain_text, TextType.NORMAL))
         # Process the current match
         if match.group(0):  # Bold (**bold**)
+            print(f"match: {match.group(0)}")
+            clean_text = match.group(0)[:end-2 ]
+            print(f"clean text: {clean_text}")
             children.append(HTMLNode("b", None, None, [TextNode(match.group(0), TextType.NORMAL)]))
         elif match.group(1):  # Code (`code`)
+            print(f"match1: {match.group(1)}")
             children.append(HTMLNode("code", None, None, [TextNode(match.group(1), TextType.NORMAL)]))
         elif match.group(2):  # Italic (_italic_)
             children.append(HTMLNode("i", None, None, [TextNode(match.group(2), TextType.NORMAL)]))
@@ -95,7 +109,7 @@ def text_to_children(text):
     return children
     
 #Function that converts a full markdown document into a single parent HTMLNode. This parent HTMLNode should contain multiple child HTMLNode objects which represent nested elements.    
-def markdown_to_html_node(markdown):
+def markdown_to_html_node_old(markdown):
     clean_blocks = markdown_to_blocks(markdown)
     print(f"clean blocks: {clean_blocks}")
     html_nodes = []
@@ -104,6 +118,8 @@ def markdown_to_html_node(markdown):
         print(f"block type: {block_type}")
         if block_type == BlockType.PARAGRAPH:
             children = text_to_children(block)
+            for child in children:
+                child.text = process_code_block(child.children.text)
             print(f"text to chidlren: {children}")
             html_nodes.append(HTMLNode("p", None, None, children))
         elif block_type == BlockType.HEADING:
@@ -111,7 +127,7 @@ def markdown_to_html_node(markdown):
             html_nodes.append(HTMLNode(determine_heading(block), None, None, children))
         # Code Blocks (special handling)    
         elif block_type == BlockType.CODE:
-            text_node = TextNode(block, TextType.NORMAL)  # No inline parsing - plain text
+            text_node = TextNode(process_code_block(block), TextType.NORMAL)  # No inline parsing - plain text
             code_node = HTMLNode("code", None, None, [text_node])
             html_nodes.append(HTMLNode("pre", None, None, [code_node]))  # Wrap code in <pre>
         # Quote Blocks

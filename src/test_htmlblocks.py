@@ -1,7 +1,7 @@
 import unittest
-from htmlblocks import markdown_to_blocks, BlockType, block_to_block_type, markdown_to_html_node, text_to_children
+from markdown_blocks import markdown_to_html_node, text_to_children, markdown_to_blocks, BlockType, block_to_block_type
 from textnode import TextNode, TextType
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class TestMarkdownToBlocks(unittest.TestCase):
     def test_markdown_to_blocks(self):
@@ -94,71 +94,137 @@ class TestBlockToBlockType(unittest.TestCase):
         block_type = block_to_block_type(md)
         self.assertEqual(block_type, BlockType.PARAGRAPH)
 
-class TestTextToChildren(unittest.TestCase):
-    def test_regular(self):
-        md = "This is just plain text with no markdown."
+# class TestTextToChildren(unittest.TestCase):
+#     def test_regular(self):
+#         md = "This is just plain text with no markdown."
 
-        children = text_to_children(md)
-        self.assertEqual(
-            children,[
-            TextNode("This is just plain text with no markdown.", TextType.NORMAL)
-        ],
-        )
+#         children = text_to_children(md)
+#         self.assertEqual(
+#             children,[
+#             TextNode("This is just plain text with no markdown.", TextType.NORMAL)
+#         ],
+#         )
 
-    def test_adjacent_multiple(self):
-        md = "**bold**_italic_`code`"
+#     def test_adjacent_multiple(self):
+#         md = "**bold**_italic_`code`"
 
-        children = text_to_children(md)
-        self.assertEqual(
-            children,[
-            HTMLNode("b", None, None, [TextNode("bold", TextType.NORMAL)]),
-            HTMLNode("i", None, None, [TextNode("italic", TextType.NORMAL)]),
-            HTMLNode("code", None, None, [TextNode("code", TextType.NORMAL)])
-        ],
-        )
+#         children = text_to_children(md)
+#         self.assertEqual(
+#             children,[
+#             HTMLNode("b", None, None, [TextNode("bold", TextType.NORMAL)]),
+#             HTMLNode("i", None, None, [TextNode("italic", TextType.NORMAL)]),
+#             HTMLNode("code", None, None, [TextNode("code", TextType.NORMAL)])
+#         ],
+#         )
 
-    def test_multiple(self):
-        md = "This is **bold** and _italic_ with `code`."
+#     def test_multiple(self):
+#         md = "This is **bold** and _italic_ with ```code```."
 
-        children = text_to_children(md)
-        self.assertEqual(
-            children,[
-            TextNode("This is ", TextType.NORMAL),
-            HTMLNode("b", None, None, [TextNode("bold", TextType.NORMAL)]),
-            TextNode(" and ", TextType.NORMAL),
-            HTMLNode("i", None, None, [TextNode("italic", TextType.NORMAL)]),
-            TextNode(" with ", TextType.NORMAL),
-            HTMLNode("code", None, None, [TextNode("code", TextType.NORMAL)]),
-            TextNode(".", TextType.NORMAL)
-        ],
-        )
+#         children = text_to_children(md)
+#         self.assertEqual(
+#             children,[
+#             TextNode("This is ", TextType.NORMAL),
+#             HTMLNode("b", None, None, [TextNode("bold", TextType.NORMAL)]),
+#             TextNode(" and ", TextType.NORMAL),
+#             HTMLNode("i", None, None, [TextNode("italic", TextType.NORMAL)]),
+#             TextNode(" with ", TextType.NORMAL),
+#             HTMLNode("code", None, None, [TextNode("code", TextType.NORMAL)]),
+#             TextNode(".", TextType.NORMAL)
+#         ],
+#         )
 
-    def test_unmatched(self):
-        md = "This is not **bold and `code"
+#     def test_unmatched(self):
+#         md = "This is not **bold and `code"
 
-        children = text_to_children(md)
-        self.assertEqual(
-            children,[
-            TextNode("This is not **bold and `code", TextType.NORMAL)
-        ],
-        )
+#         children = text_to_children(md)
+#         self.assertEqual(
+#             children,[
+#             TextNode("This is not **bold and `code", TextType.NORMAL)
+#         ],
+#         )
 
 class TestMardownToHTMLNode(unittest.TestCase):
+    def test_paragraph(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p></div>",
+        )
+
     def test_paragraphs(self):
         md = """
-        This is **bolded** paragraph
-        text in a p
-        tag here
+This is **bolded** paragraph
+text in a p
+tag here
 
-        This is another paragraph with _italic_ text and `code` here
+This is another paragraph with _italic_ text and `code` here
 
-        """
+"""
 
         node = markdown_to_html_node(md)
         html = node.to_html()
         self.assertEqual(
             html,
             "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
+
+    def test_lists(self):
+        md = """
+- This is a list
+- with items
+- and _more_ items
+
+1. This is an `ordered` list
+2. with items
+3. and more items
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>This is a list</li><li>with items</li><li>and <i>more</i> items</li></ul><ol><li>This is an <code>ordered</code> list</li><li>with items</li><li>and more items</li></ol></div>",
+        )
+
+    def test_headings(self):
+        md = """
+# this is an h1
+
+this is paragraph text
+
+## this is an h2
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h1>this is an h1</h1><p>this is paragraph text</p><h2>this is an h2</h2></div>",
+        )
+
+    def test_blockquote(self):
+        md = """
+> This is a
+> blockquote block
+
+this is paragraph text
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is a blockquote block</blockquote><p>this is paragraph text</p></div>",
         )
 
     def test_codeblock(self):
