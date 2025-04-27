@@ -2,7 +2,7 @@ import re
 from enum import Enum
 from htmlnode import HTMLNode, ParentNode, LeafNode
 from textnode import TextNode, TextType
-from main import text_node_to_html_node, text_to_textnodes
+from create_nodes import text_node_to_html_node, text_to_textnodes
 
 #We only allow specific HTML "blocks" to be created, using what is setup within the BlockType Enum.
 class BlockType(Enum):

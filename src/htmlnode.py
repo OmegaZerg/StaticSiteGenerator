@@ -64,16 +64,7 @@ class HTMLNode():
                 continue
             attributes.append(f'{key}="{html.escape(str(value))}"')
         return " " + " ".join(attributes)
-        #old code so issue with this code was is ONLY accepts strings as input. We COULD have an input of a number/integer so like "count": 5 ... and in cases like that it would fail to parse through the isinstance check
-        return " " + " ".join(f'{html.escape(key)}="{html.escape(value)}"' for key, value in self.props.items() if isinstance(value, str))
-        #old code before refactor, keeping for now
-        kv_pairs = []
-        if not self.props:
-            return ""
-        for k, v in self.props.items():
-            kv_pairs.append(f' {k}="{v}"')
-        full_string = "".join(kv_pairs)
-        return full_string
+
 
 """
 LeafNode Class:
