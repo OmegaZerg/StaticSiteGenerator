@@ -1,6 +1,6 @@
 from os.path import join, exists, isfile, isdir
 from os import listdir, mkdir
-from generate_pages import generate_page
+from generate_pages import generate_page, generate_pages_recursive
 import sys
 import shutil
 import logging
@@ -70,6 +70,7 @@ def move_directory(source, destination):
 
 def main():
     move_directory("static", "public")
-    generate_page("content/index.md", "template.html", "public/index.html")
+    #generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
 main()
