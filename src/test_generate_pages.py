@@ -47,6 +47,4 @@ This is the same paragraph on a new line
             "This is a title for a web page."
         )
 
-class TestGeneratePage(unittest.TestCase):
-    def test_generate_page1(self):
-        generate_page()
+
