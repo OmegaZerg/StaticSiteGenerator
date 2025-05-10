@@ -1,1 +1,1 @@
-python3 src/main.py "/https://github.com/OmegaZerg/StaticSiteGenerator/"
+python3 src/main.py "/StaticSiteGenerator/"
