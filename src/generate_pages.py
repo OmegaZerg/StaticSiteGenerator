@@ -1,5 +1,4 @@
 from markdown_blocks import markdown_to_html_node
-import shutil
 from os.path import dirname, join, exists, isfile, isdir, splitext
 from os import listdir, mkdir, makedirs
 import sys
@@ -22,8 +21,8 @@ def extract_title(markdown):
     else:
         final = title.lstrip("# ").strip()
         return final
-    
-def generate_page(from_path, template_path, dest_path):
+
+def generate_page(from_path, template_path, dest_path, base_path):
     logging.info(f"Generating page from {from_path} to {dest_path} using {template_path}.")
     logging.info(f"Opening file at: {from_path}")
     with open(from_path, "r") as file:
@@ -48,16 +47,17 @@ def generate_page(from_path, template_path, dest_path):
         else:
             new_line = line
         new_html = new_html + new_line + "\n"
+        replaced_html = new_html.replace('src="/', f'src="{base_path}').replace('href="/', f'href="{base_path}')
     
     logging.info(f"Writing new HTML page to {dest_path}...")
     dest_dir = dirname(dest_path)
     if dest_dir and not exists(dest_dir):
         makedirs(dest_dir)
     with open(dest_path, 'w') as f:
-        f.write(new_html)
+        f.write(replaced_html)
     
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, base_path):
     if not dir_path_content:
         return
     contents = listdir(dir_path_content)
@@ -70,7 +70,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
             if ext == ".md":
                 html_file = root + ".html"
                 logging.info(f"Markdown file found! Copying {item} from <{source_path}> to <{html_file}>")
-                generate_page(source_path, template_path, html_file)
+                generate_page(source_path, template_path, html_file, base_path)
             else:
                 logging.info(f"{ext} file type found, this file type is not accepted currently...skipping file.")
                 
@@ -83,5 +83,5 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 logging.info(f"Exception thrown: unable to create directory. Reason: {e}")
                 sys.exit()
             logging.info(f"Performing black hole recursion...")
-            generate_pages_recursive(source_path, template_path, destination_path)
+            generate_pages_recursive(source_path, template_path, destination_path, base_path)
     logging.info("Checking to see if we made it out ok...")

@@ -7,6 +7,8 @@ import logging
 #!Note: This logger function will write out to 'main.log' each time it is called from this file. This will override the previous log file, which is fine for this application since all we care about is what happened on the more recent run and less concerned with generating historcal logs for this.
 logging.basicConfig(level=logging.INFO, filename="main.log", filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
+basepath = sys.argv[1] if len(sys.argv) > 1 else "/"
+
 #Helper function that will copy a source directory and everything it contains.
 def copy_source(source_directory, destination_directory):
     if not source_directory:
@@ -69,8 +71,9 @@ def move_directory(source, destination):
 
 
 def main():
-    move_directory("static", "public")
+    move_directory("static", "docs")
     #generate_page("content/index.md", "template.html", "public/index.html")
-    generate_pages_recursive("content", "template.html", "public")
+    #generate_pages_recursive("content", "template.html", "public")
+    generate_pages_recursive("content", "template.html", "public", basepath)
 
 main()
