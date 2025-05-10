@@ -94,55 +94,6 @@ class TestBlockToBlockType(unittest.TestCase):
         block_type = block_to_block_type(md)
         self.assertEqual(block_type, BlockType.PARAGRAPH)
 
-# class TestTextToChildren(unittest.TestCase):
-#     def test_regular(self):
-#         md = "This is just plain text with no markdown."
-
-#         children = text_to_children(md)
-#         self.assertEqual(
-#             children,[
-#             TextNode("This is just plain text with no markdown.", TextType.NORMAL)
-#         ],
-#         )
-
-#     def test_adjacent_multiple(self):
-#         md = "**bold**_italic_`code`"
-
-#         children = text_to_children(md)
-#         self.assertEqual(
-#             children,[
-#             HTMLNode("b", None, None, [TextNode("bold", TextType.NORMAL)]),
-#             HTMLNode("i", None, None, [TextNode("italic", TextType.NORMAL)]),
-#             HTMLNode("code", None, None, [TextNode("code", TextType.NORMAL)])
-#         ],
-#         )
-
-#     def test_multiple(self):
-#         md = "This is **bold** and _italic_ with ```code```."
-
-#         children = text_to_children(md)
-#         self.assertEqual(
-#             children,[
-#             TextNode("This is ", TextType.NORMAL),
-#             HTMLNode("b", None, None, [TextNode("bold", TextType.NORMAL)]),
-#             TextNode(" and ", TextType.NORMAL),
-#             HTMLNode("i", None, None, [TextNode("italic", TextType.NORMAL)]),
-#             TextNode(" with ", TextType.NORMAL),
-#             HTMLNode("code", None, None, [TextNode("code", TextType.NORMAL)]),
-#             TextNode(".", TextType.NORMAL)
-#         ],
-#         )
-
-#     def test_unmatched(self):
-#         md = "This is not **bold and `code"
-
-#         children = text_to_children(md)
-#         self.assertEqual(
-#             children,[
-#             TextNode("This is not **bold and `code", TextType.NORMAL)
-#         ],
-#         )
-
 class TestMardownToHTMLNode(unittest.TestCase):
     def test_paragraph(self):
         md = """

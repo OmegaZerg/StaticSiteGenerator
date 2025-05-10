@@ -9,12 +9,15 @@ def extract_title(markdown):
     lines = markdown.split("\n")
     title = ""
     for line in lines:
-        if line.startswith("# "):
-            title = line
+        clean = line.strip()
+        if clean.startswith("# "):
+            title = clean
             break
-    title.lstrip("#").strip()
     if not title:
         raise Exception("Error: No title(h1 header) found in provided markdown document")
     else:
-        return title
+        final = title.lstrip("# ").strip()
+        return final
     
+def generate_page(from_path, template_path, dest_path):
+    pass
