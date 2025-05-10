@@ -1,3 +1,3 @@
 # Stimpy's stinky page
 
-![Ren & Stimpy](/images/RenStimpy.png)
+![Ren and Stimpy](/images/RenStimpy.png)
