@@ -74,6 +74,6 @@ def main():
     move_directory("static", "docs")
     #generate_page("content/index.md", "template.html", "public/index.html")
     #generate_pages_recursive("content", "template.html", "public")
-    generate_pages_recursive("content", "template.html", "public", basepath)
+    generate_pages_recursive("content", "template.html", "docs", basepath)
 
 main()
