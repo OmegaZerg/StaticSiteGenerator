@@ -1,5 +1,5 @@
 import unittest
-from generate_pages import extract_title
+from generate_pages import extract_title, generate_page
 
 class TestExtractTitle(unittest.TestCase):
     def test_with_title(self):
@@ -46,3 +46,7 @@ This is the same paragraph on a new line
             title,
             "This is a title for a web page."
         )
+
+class TestGeneratePage(unittest.TestCase):
+    def test_generate_page1(self):
+        generate_page()
